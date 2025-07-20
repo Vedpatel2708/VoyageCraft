@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Travel Planner - VoyageCraft</title>
+    <meta name="description" content="Design unforgettable journeys with AI-powered travel planning">
+    <meta name="author" content="Your Name">
+    <!-- Fixed CSS path: direct reference instead of Flask url_for -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Logo Container -->
+        <div class="logo-container">
+            <div class="logo">
+                <div class="globe">
+                    <div class="flight-path"></div>
+                </div>
+                <div class="airplane">
+                    <div class="airplane-body">
+                        <div class="airplane-wings"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="header">
+            <h1>VoyageCraft</h1>
+            <p>Design unforgettable journeys with AI at your side.</p>
+            <div class="project-credits">
+                <span class="created-by">Created with ❤️ by <strong>Ved</strong></span>
+                <div class="tech-stack">
+                    <span class="tech-badge">AI Powered</span>
+                    <span class="tech-badge">Smart Planning</span>
+                    <span class="tech-badge">Personalized</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trip Planning Form -->
+        <form id="tripForm" class="form-section">
+            <div class="form-grid">
+                <div class="input-group">
+                    <label for="destination">🏙️ Destination</label>
+                    <input type="text" id="destination" placeholder="Enter city or country" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="duration">📅 Duration</label>
+                    <select id="duration" required>
+                        <option value="">Select duration</option>
+                        <option value="1 day">1 Day</option>
+                        <option value="2 days">2 Days</option>
+                        <option value="3 days">3 Days</option>
+                        <option value="4-5 days">4-5 Days</option>
+                        <option value="1 week">1 Week</option>
+                        <option value="2 weeks">2 Weeks</option>
+                        <option value="3 weeks">3 Weeks</option>
+                        <option value="1 month">1 Month</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="budget">💰 Budget Range</label>
+                    <select id="budget">
+                        <option value="budget">Budget (Under ₹4000/day)</option>
+                        <option value="mid-range" selected>Mid-range (₹4000-12000/day)</option>
+                        <option value="luxury">Luxury (₹12000+/day)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="travelStyle">✈️ Travel Style</label>
+                    <select id="travelStyle">
+                        <option value="cultural" selected>Cultural</option>
+                        <option value="adventure">Adventure</option>
+                        <option value="relaxation">Relaxation</option>
+                        <option value="family">Family</option>
+                        <option value="romantic">Romantic</option>
+                        <option value="business">Business</option>
+                        <option value="backpacking">Backpacking</option>
+                        <option value="luxury">Luxury</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="input-group">
+                    <label for="interests">🎯 Interests (Press Enter to add)</label>
+                    <input type="text" id="interests" placeholder="e.g., museums, food, nightlife, shopping, nature">
+                    <div id="interestsContainer" class="interests-container"></div>
+                </div>
+
+                <div class="input-group">
+                    <label>👥 Group Size</label>
+                    <div class="group-size-container">
+                        <button type="button" class="group-size-btn" id="decreaseGroup">-</button>
+                        <span id="groupSizeDisplay">1</span>
+                        <button type="button" class="group-size-btn" id="increaseGroup">+</button>
+                        <span style="margin-left: 10px; color: #666;">travelers</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="specialRequests">✨ Special Requests (Optional)</label>
+                <textarea id="specialRequests" rows="3" placeholder="Any specific requirements, accessibility needs, dietary restrictions, etc."></textarea>
+            </div>
+
+            <button type="submit" class="btn" id="planTripBtn">
+                <span>🚀 Plan My Trip</span>
+            </button>
+        </form>
+
+        <!-- Loading Section -->
+        <div class="loading" id="loadingSection">
+            <div class="spinner"></div>
+            <div class="loading-text">Creating your perfect itinerary...</div>
+            <div class="loading-steps">
+                <div class="loading-step" id="step1">Analyzing destination</div>
+                <div class="loading-step" id="step2">Fetching weather information</div>
+                <div class="loading-step" id="step3">Creating itinerary</div>
+                <div class="loading-step" id="step4">Calculating budget</div>
+                <div class="loading-step" id="step5">Gathering local tips</div>
+                <div class="loading-step" id="step6">Finding transportation</div>
+                <div class="loading-step" id="step7">Suggesting accommodations</div>
+                <div class="loading-step" id="step8">Finalizing your plan</div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="result-section" id="resultsSection">
+            <div class="success-indicator" id="successMessage"></div>
+            
+            <div class="tab-container">
+                <div class="tab active" data-tab="itinerary">📅 Itinerary</div>
+                <div class="tab" data-tab="budget">💰 Budget</div>
+                <div class="tab" data-tab="tips">💡 Local Tips</div>
+                <div class="tab" data-tab="transport">🚗 Transport</div>
+                <div class="tab" data-tab="hotels">🏨 Hotels</div>
+            </div>
+
+            <div class="tab-content active" id="itinerary-content">
+                <div class="content-card" id="itineraryCard"></div>
+            </div>
+
+            <div class="tab-content" id="budget-content">
+                <div class="content-card" id="budgetCard"></div>
+            </div>
+
+            <div class="tab-content" id="tips-content">
+                <div class="content-card" id="tipsCard"></div>
+            </div>
+
+            <div class="tab-content" id="transport-content">
+                <div class="content-card" id="transportCard"></div>
+            </div>
+
+            <div class="tab-content" id="hotels-content">
+                <div class="content-card" id="hotelsCard"></div>
+            </div>
+
+            <button class="btn" id="newPlanBtn" style="margin-top: 20px;">
+                <span>🔄 Plan Another Trip</span>
+            </button>
+        </div>
+
+        <div class="error-message" id="errorMessage" style="display: none;"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <h3>VoyageCraft</h3>
+                        <p>AI-Powered Travel Planning</p>
+                    </div>
+                    <p class="footer-description">
+                        Transforming the way you plan your travels with intelligent AI recommendations 
+                        and personalized itineraries crafted just for you.
+                    </p>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Creator</h4>
+                    <div class="creator-info">
+                        <p><strong>Ved Patel</strong></p>
+                        <p>Full Stack Developer & AI/ML Enthusiast</p>
+                        <div class="contact-links">
+                            <a href="mailto:vedpatel3283@example.com" class="contact-link">
+                                <span class="contact-icon">📧</span>
+                                vedpatel3283@gmail.com
+                            </a>
+                            <a href="https://www.linkedin.com/in/ved-patel-b65458259" class="contact-link" target="_blank">
+                                <span class="contact-icon">💼</span>
+                                LinkedIn Profile
+                            </a>
+                            <a href="https://github.com/Vedpatel2708" class="contact-link" target="_blank">
+                                <span class="contact-icon">💻</span>
+                                GitHub
+                            </a>
+                            <a href="https://vedpatel2708.github.io/Portfolio/" class="contact-link" target="_blank">
+                                <span class="contact-icon">🌐</span>
+                                Portfolio
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Features</h4>
+                    <ul class="feature-list">
+                        <li>✨ AI-Powered Recommendations</li>
+                        <li>🎯 Personalized Itineraries</li>
+                        <li>💰 Smart Budget Planning</li>
+                        <li>🏨 Accommodation Suggestions</li>
+                        <li>🚗 Transportation Options</li>
+                        <li>💡 Local Insights & Tips</li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Technology Stack</h4>
+                    <div class="tech-stack-footer">
+                        <span class="tech-item">Python</span>
+                        <span class="tech-item">Flask</span>
+                        <span class="tech-item">JavaScript</span>
+                        <span class="tech-item">HTML5</span>
+                        <span class="tech-item">CSS3</span>
+                        <span class="tech-item">AI/ML</span>
+                        <span class="tech-item">APIs</span>
+                    </div>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <span class="stat-number">1K+</span>
+                            <span class="stat-label">Trips Planned</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">95%</span>
+                            <span class="stat-label">Satisfaction Rate</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-bottom-content">
+                    <p>&copy; 2025 VoyageCraft. Designed & Developed by <strong>Ved Patel</strong>. All rights reserved.</p>
+                    <div class="footer-links">
+                        <a href="#privacy">Privacy Policy</a>
+                        <a href="#terms">Terms of Service</a>
+                        <a href="#contact">Contact</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Fixed JS path: direct reference instead of Flask url_for -->
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
