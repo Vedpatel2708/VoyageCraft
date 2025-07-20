@@ -17,7 +17,7 @@ VoyageCraft is an intelligent travel planning application that uses AI to create
 
 ## 🚀 Live Demo
 
-[Visit VoyageCraft](voyagecraft.vercel.app) *(Add your actual deployment URL)*
+[Visit VoyageCraft](https://voyagecraft.vercel.app/) 
 
 ## 🛠️ Technology Stack
 
